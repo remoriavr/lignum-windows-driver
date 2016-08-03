@@ -64,7 +64,7 @@
 // export device
 module.exports = nrfuart;
 // script info
-console.log('Author: Remoria VR LTD.');
+console.log('Author: Remoria VR');
 console.log('Description: LIGNUM Controller Bluetooth LE Driver');
 console.log('Script: LIGNUM.js');
 console.log('Author: Matteo Pisani');
