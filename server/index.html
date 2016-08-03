@@ -1,0 +1,96 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" type="image/ico" href="./favicon.ico"/>
+    <script src="./libraries/aframe.min.js"></script>
+    <script src="./libraries/aframe-obj-loader-component.min.js"></script>
+    <title>LIGNUM Controller Universal Driver SandBox</title>
+    <style>
+      body,html {
+        margin: 0px;
+        padding: 0px;
+        overflow-y: hidden;
+        overflow-x: hidden;
+        background-color: #fff;
+      }
+      p {
+        color: #fff;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 16px;
+        font-style: normal;
+        font-variant: normal;
+        font-weight: 200;
+        line-height: 25%;
+      }
+    </style>
+	<script>
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function()
+    {
+      if (xhttp.readyState == 4 && xhttp.status == 200)
+      {
+        pps++;
+        if (xhttp.responseText.indexOf(':') > 0)
+        {
+          document.getElementById('gesture').innerText = 'gesture: ' + data.split(':')[1].replace('|','');
+        }
+        else
+        {
+          var LIGNUM_PACKET = xhttp.responseText.replace('|','').split(',');
+          if(LIGNUM_PACKET.length == 6)
+          {
+            document.getElementById('status').innerText = 'status: polling';
+            document.getElementById('x').innerText = 'x: ' + LIGNUM_PACKET[0];
+            document.getElementById('y').innerText = 'y: ' + LIGNUM_PACKET[1];
+            document.getElementById('z').innerText = 'z: ' + LIGNUM_PACKET[2];
+            document.getElementById('joystick').innerText = 'joystick: ' + LIGNUM_PACKET[3];
+            document.getElementById('buttons').innerText = 'buttons: ' + LIGNUM_PACKET[4];
+            document.getElementById('battery').innerText = 'battery: ' + LIGNUM_PACKET[5];
+            if(LIGNUM_PACKET[0] != '0.0' && LIGNUM_PACKET[1]!= '0.0' && LIGNUM_PACKET[2] != '0.0')
+            {
+              document.querySelector('a-entity[id=lignum]').setAttribute('rotation', -LIGNUM_PACKET[1]+ ' '+ -LIGNUM_PACKET[2] + ' ' + -LIGNUM_PACKET[0]);
+            }
+          }
+        }
+      }
+    };
+
+    setInterval(function()
+    {
+      xhttp.open("GET", "http://127.0.0.1:5191", true);
+      xhttp.send();
+    },15);
+
+    // packets per second counter
+    var pps = 0;
+    setInterval(function()
+    {
+      document.getElementById('pps').innerText = 'pps: ' + pps;
+      pps = 0;
+    },1000);
+    window.onload = function()
+    {
+      document.getElementById('status').innerText = 'status: initializing';
+    };
+	</script>
+  </head>
+  <body>
+    <a-scene>
+      <a-camera id="camera" position="0 0 15"></a-camera>
+      <a-sky color="#000"></a-sky>
+      <a-entity id="lignum" obj-loader="src: url(./shape/LIGNUM.obj);mtl: url(./shape/LIGNUM.mtl);" position="0 0 0" rotation="45 0 0" scale="2.5 2.5 2.5">
+      </a-entity>
+    </a-scene>
+    <div style="position:absolute;margin-left:25px;margin-top:25px;z-index:999;">
+      <p id="status">status: </p>
+      <p id="battery">battery: </p>
+      <p id="pps">pps: </p>
+      <p id="gesture">gesture: </p>
+      <p id="x">x: </p>
+      <p id="y">y: </p>
+      <p id="z">z: </p>
+      <p id="joystick">joystick: </p>
+      <p id="buttons">buttons: </p>
+    </div>
+  </body>
+</html>
